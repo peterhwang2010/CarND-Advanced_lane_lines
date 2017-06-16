@@ -1,35 +1,64 @@
-## Advanced Lane Finding
-[![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
+[//]: # (Image References)
 
+[image1]: ./examples/original.png "Original Image"
+[image2]: ./examples/undistorted.png "Undistorted"
+[image3]: ./examples/perspective_transform_img.jpg "Perspective Transformed Image"
+[image4]: ./examples/l-channel.png "L Channel"
+[image5]: ./examples/s-channel.png "S Channel"
+[image6]: ./examples/combine-channel.png "Combine Channel"
+[video1]: ./project_video.mp4 "Video"
 
-In this project, your goal is to write a software pipeline to identify the lane boundaries in a video, but the main output or product we want you to create is a detailed writeup of the project.  Check out the [writeup template](https://github.com/udacity/CarND-Advanced-Lane-Lines/blob/master/writeup_template.md) for this project and use it as a starting point for creating your own writeup.  
-
-Creating a great writeup:
----
-A great writeup should include the rubric points as well as your description of how you addressed each point.  You should include a detailed description of the code used in each step (with line-number references and code snippets where necessary), and links to other supporting documents or external references.  You should include images in your writeup to demonstrate how your code works with examples.  
-
-All that said, please be concise!  We're not looking for you to write a book here, just a brief description of how you passed each rubric point, and references to the relevant code :). 
-
-You're not required to use markdown for your writeup.  If you use another method please just submit a pdf of your writeup.
-
-The Project
+# Advance Lane Lines 
 ---
 
-The goals / steps of this project are the following:
+## Camera Calibration
+---
 
-* Compute the camera calibration matrix and distortion coefficients given a set of chessboard images.
-* Apply a distortion correction to raw images.
-* Use color transforms, gradients, etc., to create a thresholded binary image.
-* Apply a perspective transform to rectify binary image ("birds-eye view").
-* Detect lane pixels and fit to find the lane boundary.
-* Determine the curvature of the lane and vehicle position with respect to center.
-* Warp the detected lane boundaries back onto the original image.
-* Output visual display of the lane boundaries and numerical estimation of lane curvature and vehicle position.
+To calibrate the camera, I used the images of chessboard provided to me. I used the `cv2.findChessboardCorners` to find the corners of the board. Once I found the corners of the chessboard, I drew the lines using `cv2.drawChessboardCorners`.
 
-The images for camera calibration are stored in the folder called `camera_cal`.  The images in `test_images` are for testing your pipeline on single frames.  If you want to extract more test images from the videos, you can simply use an image writing method like `cv2.imwrite()`, i.e., you can read the video in frame by frame as usual, and for frames you want to save for later you can write to an image file.  
+After finding the image points and objects points, I undistorted the camera lens.
 
-To help the reviewer examine your work, please save examples of the output from each stage of your pipeline in the folder called `ouput_images`, and include a description in your writeup for the project of what each image shows.    The video called `project_video.mp4` is the video your pipeline should work well on.  
+## Undistorting Image
+---
 
-The `challenge_video.mp4` video is an extra (and optional) challenge for you if you want to test your pipeline under somewhat trickier conditions.  The `harder_challenge.mp4` video is another optional challenge and is brutal!
+After I finished calibrating the camera, I undistorted the image by using the object and image points from previous function. I called the `cv2` function called `cv2.undistort` and passed in the image, image points, and obj points as the parameters, which return an image that has been undistorted.
 
-If you're feeling ambitious (again, totally optional though), don't stop there!  We encourage you to go out and take video of your own, calibrate your camera and show us how you would implement this project from scratch!
+### Original Image 
+![alt text][image1]
+
+### Undistorted Image 
+![alt text][image2]
+
+## Perspective Transform 
+---
+
+With the undistorted image, I performed the perspective transform on the image. The point of the perspective transform is to view image as the bird's eye view. Which will be useful later to calculate the lane curvature. 
+
+The way I performed the perspective transform was by using `cv2` library. We called on the `cv2.getPerspectiveTransform` and passed in the destination and source points. The source points the I used for this project ...
+
+| Source        | Destination   | 
+|:-------------:|:-------------:| 
+| 490, 482      | 0, 0          | 
+| 810, 482      | 1280, 0       |
+| 1250, 720     | 1250, 720     |
+| 40, 720       | 40, 720       |
+
+### Original Image 
+![alt text][image1]
+
+### Perspective Transformed Image 
+![alt text][image3]
+
+## Color Thresholding
+---
+
+Inorder to detect the lane lines better I am using saturation and lightness channel.  After applying the threshold on both channels, I am combining the two to determine the lane lines in the image.
+
+### S Channel
+![alt text][image4]
+
+### L Channel
+![alt text][image5]
+
+### Combine Channel
+![alt text][image6]
