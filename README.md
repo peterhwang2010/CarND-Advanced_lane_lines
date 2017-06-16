@@ -9,7 +9,8 @@
 [image7]: ./examples/polynomial-fitted.png "Polynomial Fitted"
 [image8]: ./examples/polynomial-drawn.png "Polynomial drawn"
 [image9]: ./examples/highlighted-lane.png "Highlighted Lane"
-[video1]: ./project_video.mp4 "Video"
+[image10]: ./examples/combined-image.png "Combined Image"
+[video1]: ./project_video_out.mp4 "Video"
 
 # Advance Lane Lines 
 
@@ -134,3 +135,28 @@ The way I identifies the lane lines is by first dividing `n` steps by equal heig
       
       return area_mask
 ```
+## Calculating Curvature 
+
+I got the curvature of the line by using the equation from one of the Udacity lessons. I used the equation `f(y) = Ay^2 + By + C`, where A, B, and C is the coefficient. 
+### Code 
+```
+ curvature = np.absolute(((1 + (2 * left_coeffs[0] * y_eval + left_coeffs[1])**2) ** 1.5)/(2 * left_coeffs[0]))
+```
+
+## Plotting Image back to Original Image
+
+They way I plotted the image was by first using the `cv2.getPerspectiveTransform` to get the value. Once I got the value, I called `cv2.warpPerspective` and passed in the image of the lane hightlight and return value. Once I got the the perspective transformed image of the highlighted lane, I combined the original image and the perspective transformed highlighted image using the `cv2.add`
+
+![alt text][image10]
+### Code 
+```
+Minv = cv2.getPerspectiveTransform(dst_coords, src_coords)
+lane_lines = cv2.warpPerspective(trace, Minv, (img.shape[1], img.shape[0]), flags=cv2.INTER_LINEAR)
+combined_img = cv2.add(lane_lines, img)
+```
+
+## Video 
+![alt text][video1]
+
+## Discussion
+ There were times when the curvature would jump significantly. This was dues to the fact that it had hard time finding the lines on the image. This only happened on two frames in the video. The way I fixed this issue was by creating threshold, where if the curvature changes dramatically, I would consider that an outlier and just keep the value of the curvature of the frame before. I can see this possibly being an issue if, there are many frames with crazy outlier of curvatures in a row. 
