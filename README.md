@@ -140,7 +140,7 @@ The way I identifies the lane lines is by first dividing `n` steps by equal heig
 I got the curvature of the line by using the equation from one of the Udacity lessons. I used the equation `f(y) = Ay^2 + By + C`, where A, B, and C is the coefficient. 
 ### Code 
 ```
- curvature = np.absolute(((1 + (2 * left_coeffs[0] * y_eval + left_coeffs[1])**2) ** 1.5)/(2 * left_coeffs[0]))
+ curvature = nnp.absolute(((1 + (2 * left_coeffs[0] * y_eval * ym_per_pix + left_coeffs[1])**2) ** 1.5)/(2 * left_coeffs[0]))
 ```
 
 ## Plotting Image back to Original Image
@@ -160,3 +160,5 @@ combined_img = cv2.add(lane_lines, img)
 
 ## Discussion
  There were times when the curvature would jump significantly. This was dues to the fact that it had hard time finding the lines on the image. This only happened on two frames in the video. The way I fixed this issue was by creating threshold, where if the curvature changes dramatically, I would consider that an outlier and just keep the value of the curvature of the frame before. I can see this possibly being an issue if, there are many frames with crazy outlier of curvatures in a row. 
+
+ Some hypothetical cases where our pipeline can fail, is if for some reason there is no lane lines or color of the lane line is different. We are solely relying on the fact that all lane lines are white or yellow. 
